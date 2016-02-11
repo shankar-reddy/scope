@@ -4,11 +4,13 @@ import (
 	"compress/gzip"
 	"encoding/gob"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/PuerkitoBio/ghost/handlers"
+	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 
 	"github.com/weaveworks/scope/common/hostname"
@@ -114,6 +116,21 @@ func TopologyHandler(c Reporter, preRoutes *mux.Router, postRoutes http.Handler)
 	})
 }
 
+type byteCounter struct {
+	next  io.ReadCloser
+	count *int
+}
+
+func (c byteCounter) Read(p []byte) (n int, err error) {
+	n, err = c.next.Read(p)
+	*c.count += n
+	return n, err
+}
+
+func (c byteCounter) Close() error {
+	return c.next.Close()
+}
+
 // RegisterReportPostHandler registers the handler for report submission
 func RegisterReportPostHandler(a Adder, router *mux.Router) {
 	post := router.Methods("POST").Subrouter()
@@ -131,6 +148,10 @@ func RegisterReportPostHandler(a Adder, router *mux.Router) {
 			}
 		}
 
+		var size int
+		if log.GetLevel() == log.DebugLevel {
+			reader = byteCounter{next: reader, count: &size}
+		}
 		decoder := gob.NewDecoder(reader).Decode
 		if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
 			decoder = json.NewDecoder(reader).Decode
@@ -139,6 +160,9 @@ func RegisterReportPostHandler(a Adder, router *mux.Router) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		log.Debugf("Decoded report with uncompressed size: %d bytes", size)
+
 		a.Add(rpt)
 		if len(rpt.Pod.Nodes) > 0 {
 			topologyRegistry.enableKubernetesTopologies()
