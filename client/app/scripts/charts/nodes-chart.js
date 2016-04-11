@@ -129,7 +129,7 @@ export default class NodesChart extends React.Component {
             highlightedNodeIds={this.props.highlightedNodeIds}
             hasSelectedNode={this.props.hasSelectedNode}
             nodeScale={this.state.nodeScale}
-            scale={this.state.scale}
+            scale="1"
             selectedNodeScale={this.state.selectedNodeScale}
             topologyId={this.props.topologyId} />
         </svg>
@@ -365,12 +365,8 @@ export default class NodesChart extends React.Component {
     return nextState;
   }
 
-  getNodeScale(props) {
-    const expanse = Math.min(props.height, props.width);
-    const nodeSize = expanse / 3; // single node should fill a third of the screen
-    const maxNodeSize = expanse / 10;
-    const normalizedNodeSize = Math.min(nodeSize / Math.sqrt(props.nodes.size), maxNodeSize);
-    return this.state.nodeScale.copy().range([0, normalizedNodeSize]);
+  getNodeScale() {
+    return this.state.nodeScale.copy().range([0, 64]);
   }
 
   zoomed() {
