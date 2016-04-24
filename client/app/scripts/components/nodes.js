@@ -4,6 +4,7 @@ import reactMixin from 'react-mixin';
 
 import NodesChart from '../charts/nodes-chart';
 import NodesError from '../charts/nodes-error';
+import { CANVAS_MARGINS } from '../constants/styles';
 
 const navbarHeight = 160;
 const marginTop = 0;
@@ -71,6 +72,7 @@ export default class Nodes extends React.Component {
       <div className="nodes-wrapper">
         {topologyEmpty && errorEmpty}
         <NodesChart {...this.props} {...this.state}
+          margins={CANVAS_MARGINS}
           layoutPrecision={layoutPrecision}
           hasSelectedNode={hasSelectedNode}
         />

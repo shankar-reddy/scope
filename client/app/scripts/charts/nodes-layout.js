@@ -176,6 +176,7 @@ function layoutSingleNodes(layout, opts) {
     offsetY = offsetY || margins.top + nodeHeight / 2;
 
     const columns = Math.ceil(Math.sqrt(singleNodes.size));
+    const rows = Math.ceil(singleNodes.size / columns);
     let row = 0;
     let col = 0;
     let singleX;
@@ -197,9 +198,11 @@ function layoutSingleNodes(layout, opts) {
       return node;
     });
 
+    console.log(singleX, singleY);
+
     // adjust layout dimensions if graph is now bigger
-    result.width = Math.max(layout.width, singleX + nodeWidth / 2 + nodesep);
-    result.height = Math.max(layout.height, singleY + nodeHeight / 2 + ranksep);
+    result.width = Math.max(layout.width, columns * nodeWidth + (columns - 1) * nodesep);
+    result.height = Math.max(layout.height, rows * nodeHeight + (rows - 1) * ranksep);
     result.nodes = nodes;
   }
 

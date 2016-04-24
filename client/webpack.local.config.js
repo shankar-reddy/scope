@@ -15,7 +15,13 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
  */
 
  // Inject websocket url to dev backend
- var WEBPACK_SERVER_HOST = process.env.WEBPACK_SERVER_HOST || 'localhost';
+
+var WEBPACK_SERVER_HOST = process.env.WEBPACK_SERVER_HOST || 'localhost';
+var COMMON_DEPS = [
+  'webpack-dev-server/client?http://' + WEBPACK_SERVER_HOST + ':4041',
+  'webpack/hot/only-dev-server',
+  './app/scripts/debug'
+];
 
 module.exports = {
 
@@ -24,22 +30,10 @@ module.exports = {
 
   // Set entry point include necessary files for hot load
   entry: {
-    'app': [
-      './app/scripts/main',
-      'webpack-dev-server/client?http://' + WEBPACK_SERVER_HOST + ':4041',
-      'webpack/hot/only-dev-server',
-      './app/scripts/debug'
-    ],
-    'contrast-app': [
-      './app/scripts/contrast-main',
-      'webpack-dev-server/client?http://' + WEBPACK_SERVER_HOST + ':4041',
-      'webpack/hot/only-dev-server'
-    ],
-    'terminal-app': [
-      './app/scripts/terminal-main',
-      'webpack-dev-server/client?http://' + WEBPACK_SERVER_HOST + ':4041',
-      'webpack/hot/only-dev-server'
-    ],
+    'app': [ './app/scripts/main' ].concat(COMMON_DEPS),
+    'contrast-app': [ './app/scripts/contrast-main' ].concat(COMMON_DEPS),
+    'terminal-app': [ './app/scripts/terminal-main' ].concat(COMMON_DEPS),
+    'examples-app': [ './app/scripts/examples-main' ].concat(COMMON_DEPS),
     vendors: ['classnames', 'd3', 'dagre', 'flux', 'immutable',
       'lodash', 'page', 'react', 'react-dom', 'react-motion']
   },
@@ -56,6 +50,11 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js'),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new HtmlWebpackPlugin({
+      chunks: ['vendors', 'examples-app'],
+      template: 'app/html/index.html',
+      filename: 'examples.html'
+    }),
     new HtmlWebpackPlugin({
       chunks: ['vendors', 'contrast-app'],
       template: 'app/html/index.html',

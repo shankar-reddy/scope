@@ -22,7 +22,11 @@ ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor i
 voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
 proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
 
-const sample = (collection) => _.range(_.random(4)).map(() => _.sample(collection));
+const sample = (collection, maxConns) => (
+  _.range(_.random(maxConns)).map(() => (
+    _.sample(collection)
+  ))
+);
 
 
 const shapeTypes = {
@@ -37,23 +41,21 @@ const LABEL_PREFIXES = _.range('A'.charCodeAt(), 'Z'.charCodeAt() + 1)
   .map(n => String.fromCharCode(n));
 
 
-// const randomLetter = () => _.sample(LABEL_PREFIXES);
-
-
-const deltaAdd = (name, adjacency = [], shape = 'circle', stack = false, nodeCount = 1) => ({
-  adjacency,
-  controls: {},
-  shape,
-  stack,
-  node_count: nodeCount,
-  id: name,
-  label: name,
-  label_minor: name,
-  latest: {},
-  metadata: {},
-  origins: [],
-  rank: name
-});
+export const deltaAdd = (name, adjacency = [], shape = 'circle',
+  stack = false, nodeCount = 1, labelMinor = name) => ({
+    adjacency,
+    controls: {},
+    shape,
+    stack,
+    node_count: nodeCount,
+    id: name,
+    label: name,
+    label_minor: labelMinor,
+    latest: {},
+    metadata: {},
+    origins: [],
+    rank: name
+  });
 
 
 function addMetrics(node, v) {
@@ -110,23 +112,27 @@ function startPerf(delay) {
 }
 
 
-function addNodes(n, prefix = 'zing') {
+export function makeNodes(n, prefix, maxConns = 4) {
   const ns = AppStore.getNodes();
   const nodeNames = ns.keySeq().toJS();
   const newNodeNames = _.range(ns.size, ns.size + n).map(i => (
-    // `${randomLetter()}${randomLetter()}-zing`
     `${prefix}${i}`
   ));
   const allNodes = _(nodeNames).concat(newNodeNames).value();
 
+  return newNodeNames.map((name) => deltaAdd(
+    name,
+    sample(allNodes, maxConns),
+    _.sample(SHAPES),
+    _.sample(STACK_VARIANTS),
+    _.sample(NODE_COUNTS)
+  ));
+}
+
+
+function addNodes(n, prefix = 'zing') {
   receiveNodesDelta({
-    add: newNodeNames.map((name) => deltaAdd(
-      name,
-      sample(allNodes),
-      _.sample(SHAPES),
-      _.sample(STACK_VARIANTS),
-      _.sample(NODE_COUNTS)
-    ))
+    add: makeNodes(n, prefix)
   });
 }
 
