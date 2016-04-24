@@ -368,7 +368,9 @@ export default class NodesChart extends React.Component {
     if (!state.hasZoomed && zoomFactor > 0 && zoomFactor < 1) {
       zoomScale = zoomFactor;
       // saving in d3's behavior cache
-      this.zoom.scale(zoomFactor);
+      if (this.zoom) {
+        this.zoom.scale(zoomFactor);
+      }
     }
 
     nextState.scale = zoomScale;
