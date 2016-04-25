@@ -58,8 +58,7 @@ function runLayoutEngine(graph, imNodes, imEdges, opts) {
     if (!graph.hasNode(gNodeId)) {
       graph.setNode(gNodeId, {
         width: nodeWidth,
-        height: nodeHeight,
-        rank: `boom${Math.random()}`
+        height: nodeHeight
       });
     }
   });
