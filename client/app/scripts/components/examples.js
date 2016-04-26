@@ -2,6 +2,7 @@
 import React from 'react';
 import _ from 'lodash';
 import NodesChart from '../charts/nodes-chart';
+import NodesGrid from '../charts/nodes-grid';
 import { deltaAdd } from './debug-toolbar';
 import { fromJS, Map as makeMap, Set as makeSet } from 'immutable';
 
@@ -76,13 +77,11 @@ function proxyGraph(n) {
 }
 
 
-function chart(nodes, n) {
-  const margins = { top: 0, left: 0, right: 0, bottom: 0 };
-  const style = {
-    width: 250,
-    height: 250
-  };
-
+function chart(nodes,
+               n,
+               style = { width: 250, height: 250 },
+               margins = { top: 0, left: 0, right: 0, bottom: 0 },
+               nodeSize = null) {
   return (
     <div key={n} className="example-chart" style={style}>
       <NodesChart
@@ -94,7 +93,47 @@ function chart(nodes, n) {
         highlightedEdgeIds={makeSet()}
         layoutPrecision="3"
         topologyId={Math.random()}
+        noZoom="true"
+        nodeSize={nodeSize}
       />
+    </div>
+  );
+}
+
+
+function variants() {
+  const nCharts = 5;
+  const width = 250;
+  const style = {width: nCharts * (width + 16)};
+  const generators = [
+    { id: 'disconnectedGraph', fn: disconnectedGraph },
+    { id: 'completeGraphBi', fn: completeGraphBi },
+    { id: 'completeGraph', fn: completeGraph },
+    { id: 'flatTree', fn: flatTree },
+    { id: 'proxyGraph', fn: proxyGraph }
+  ];
+  return (
+    <div>
+      {_.reverse(generators).map(({id, fn}) => (
+        <div key={id} className="nodes-chart-examples" style={style}>
+          {_.range(1, nCharts + 1).map(i => (
+            chart(fn(i), i)
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+function gridView() {
+  const nodes = proxyGraph(3).map(node => node.remove('label'));
+  return (
+    <div className="nodes-grid">
+      <NodesGrid nodes={nodes} />
+      {chart(nodes, 4, {width: 300, height: 500},
+             {top: 36, left: 0, right: 0, bottom: 0},
+            36)}
     </div>
   );
 }
@@ -102,25 +141,10 @@ function chart(nodes, n) {
 
 export class Examples extends React.Component {
   render() {
-    const nCharts = 10;
-    const width = 300;
-    const style = {width: nCharts * (300 + 16)};
-    const generators = [
-      { id: 'disconnectedGraph', fn: disconnectedGraph },
-      { id: 'completeGraphBi', fn: completeGraphBi },
-      { id: 'completeGraph', fn: completeGraph },
-      { id: 'flatTree', fn: flatTree },
-      { id: 'proxyGraph', fn: proxyGraph }
-    ];
     return (
-      <div className="examples" style={style}>
-        {_.reverse(generators).map(({id, fn}) => (
-          <div key={id} className="nodes-chart-examples" style={style}>
-            {_.range(1, nCharts + 1).map(i => (
-              chart(fn(i), i)
-            ))}
-          </div>
-        ))}
+      <div className="examples">
+        {gridView()}
+        {true && variants()}
       </div>
     );
   }

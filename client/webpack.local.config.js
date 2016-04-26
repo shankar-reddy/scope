@@ -91,7 +91,7 @@ module.exports = {
         loader: 'json-loader'
       },
       {
-        test: /\.less$/,
+        test: /(\.css|\.less)$/,
         loader: 'style-loader!css-loader!postcss-loader!less-loader'
       },
       {

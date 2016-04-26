@@ -49,7 +49,8 @@ function runLayoutEngine(graph, imNodes, imEdges, opts) {
   // configure node margins
   graph.setGraph({
     nodesep,
-    ranksep
+    ranksep,
+    rankdir: 'LR'
   });
 
   // add nodes to the graph if not already there
@@ -262,6 +263,32 @@ function setSimpleEdgePoints(edge, nodeCache) {
   ]));
 }
 
+
+function uniqueRowConstraint(layout, options) {
+  const result = Object.assign({}, layout);
+  const scale = options.scale || DEFAULT_SCALE;
+  const nodeHeight = scale(NODE_SIZE_FACTOR);
+  const margins = options.margins || DEFAULT_MARGINS;
+
+  const rowHeight = nodeHeight;
+  const nodeOrder = makeMap(layout.nodes
+                            .toList()
+                            .sortBy(n => n.get('y'))
+                            .map((n, i) => [n.get('id'), i]));
+
+  result.nodes = layout.nodes.map(node => node.merge({
+    x: node.get('x'),
+    y: nodeOrder.get(node.get('id')) * rowHeight + nodeHeight * 0.5 + margins.top
+  }));
+
+  result.edges = layout.edges.map(edge => (
+    setSimpleEdgePoints(edge, result.nodes)
+  ));
+
+  return result;
+}
+
+
 /**
  * Determine if nodes were added between node sets
  * @param  {Map} nodes     new Map of nodes
@@ -373,6 +400,7 @@ export function doLayout(immNodes, immEdges, opts) {
     }
     layout = layoutSingleNodes(layout, opts);
     layout = shiftLayoutToCenter(layout, opts);
+    layout = uniqueRowConstraint(layout, opts);
   }
 
   // cache results

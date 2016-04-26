@@ -317,9 +317,7 @@ export default class NodesChart extends React.Component {
   }
 
   updateGraphState(props, state) {
-    const n = props.nodes.size;
-
-    if (n === 0) {
+    if (props.nodes.size === 0) {
       return {
         nodes: makeMap(),
         edges: makeMap()
@@ -330,6 +328,10 @@ export default class NodesChart extends React.Component {
     const stateEdges = this.initEdges(props.nodes, stateNodes);
     const nodeScale = this.getNodeScale(props.nodes, state.width, state.height);
     const nextState = { nodeScale };
+    const nodeOrder = makeMap(stateNodes
+      .toList()
+      .sortBy(n => n.get('label'))
+      .map((n, i) => [n.get('id'), i]));
 
     const options = {
       width: state.width,
@@ -338,7 +340,8 @@ export default class NodesChart extends React.Component {
       margins: props.margins,
       forceRelayout: props.forceRelayout,
       topologyId: this.props.topologyId,
-      topologyOptions: this.props.topologyOptions
+      topologyOptions: this.props.topologyOptions,
+      nodeOrder
     };
 
     const timedLayouter = timely(doLayout);
@@ -365,7 +368,7 @@ export default class NodesChart extends React.Component {
     const zoomFactor = Math.min(xFactor, yFactor);
     let zoomScale = this.state.scale;
 
-    if (!state.hasZoomed && zoomFactor > 0 && zoomFactor < 1) {
+    if (!this.props.noZoom && !state.hasZoomed && zoomFactor > 0 && zoomFactor < 1) {
       zoomScale = zoomFactor;
       // saving in d3's behavior cache
       if (this.zoom) {
@@ -389,7 +392,7 @@ export default class NodesChart extends React.Component {
     const nodeSize = expanse / 3; // single node should fill a third of the screen
     const maxNodeSize = expanse / 10;
     const normalizedNodeSize = Math.min(nodeSize / Math.sqrt(nodes.size), maxNodeSize);
-    return this.state.nodeScale.copy().range([0, normalizedNodeSize]);
+    return this.state.nodeScale.copy().range([0, this.props.nodeSize || normalizedNodeSize]);
   }
 
   zoomed() {

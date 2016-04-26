@@ -1224,16 +1224,23 @@ h2 {
 
 .examples {
   background-color: @background-average-color;
+  .example-chart {
+    position: relative;
+  }
 }
 
 .nodes-chart-examples {
   .example-chart {
     margin: 8px;
-    position: relative;
-    border: 1px solid steelBlue;
     display: inline-block;
+    border: 1px solid steelBlue;
+  }
+}
 
-    .nodes-chart {
-    }
+.nodes-grid {
+  display: flex;
+  flex-direction: row;
+  div {
+    display: inline-block;
   }
 }
