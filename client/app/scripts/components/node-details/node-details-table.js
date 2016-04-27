@@ -15,7 +15,7 @@ export default class NodeDetailsTable extends React.Component {
     super(props, context);
     this.DEFAULT_LIMIT = 5;
     this.state = {
-      limit: this.DEFAULT_LIMIT,
+      limit: props.limit || this.DEFAULT_LIMIT,
       sortedDesc: true,
       sortBy: null
     };

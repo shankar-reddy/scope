@@ -18,9 +18,9 @@ function graph(props) {
 
 function getColumns(nodes) {
   const allColumns = nodes.toList().flatMap(n => {
-    const metrics = n.get('metrics', makeList())
+    const metrics = (n.get('metrics') || makeList())
       .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
-    const metadata = n.get('metadata', makeList())
+    const metadata = (n.get('metadata') || makeList())
       .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
     return metadata.concat(metrics);
   });
@@ -65,7 +65,7 @@ export default class NodesGrid extends React.Component {
     return (
       <div className="nodes-grid" style={cmpStyle}>
         <div className="nodes-grid-table">
-          <NodeDetailsTable {...detailsData} />
+          <NodeDetailsTable {...detailsData} limit={-1} />
         </div>
         {graph(graphProps)}
       </div>
