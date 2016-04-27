@@ -1,25 +1,31 @@
 /* eslint react/jsx-no-bind: "off" */
 
 import React from 'react';
+import { Set as makeSet, List as makeList, Map as makeMap } from 'immutable';
 import NodesChart from './nodes-chart';
-
-const COLUMNS = [
-  { label: 'Node', key: 'label', style: { width: 200 } },
-  { label: 'Shape', key: 'shape', style: { width: 100 } },
-  { label: 'Rank', key: 'rank' },
-  { label: 'Graph', key: 'graph', style: { width: 800 } }
-];
+import NodeDetailsTable from '../components/node-details/node-details-table';
 
 
 function graph(props) {
   const {width, height} = props;
   return (
-    <td key={props.key} className="nodes-grid-graph-header">
-      <div style={{height, width}} className="nodes-grid-graph">
-        <NodesChart {...props} />
-      </div>
-    </td>
+    <div style={{height, width}} className="nodes-grid-graph">
+      <NodesChart {...props} />
+    </div>
   );
+}
+
+
+function getColumns(nodes) {
+  const allColumns = nodes.toList().flatMap(n => {
+    const metrics = n.get('metrics', makeList())
+      .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
+    const metadata = n.get('metadata', makeList())
+      .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
+    return metadata.concat(metrics);
+  });
+  console.log('allColumns', allColumns.toJS());
+  return makeSet(allColumns).toJS();
 }
 
 
@@ -30,7 +36,7 @@ export default class NodesGrid extends React.Component {
     const tableHeight = nodes.size * rowStyle.height;
     const graphProps = Object.assign({}, this.props, {
       height: tableHeight,
-      width: 800,
+      width: 400,
       noZoom: true,
       nodeSize: nodeSize - 4,
       margins: {top: 0, left: 0, right: 0, bottom: 0},
@@ -44,32 +50,24 @@ export default class NodesGrid extends React.Component {
       paddingRight: margins.right,
     };
 
+    const detailsData = {
+      label: 'procs',
+      id: '',
+      nodes: nodes.toList().toJS(),
+      columns: getColumns(nodes)
+      // columns: [
+        // { id: 'pid', label: 'PID', defaultSort: false },
+        // { id: 'process_cpu_usage_percent', label: 'CPU', defaultSort: false },
+        // { id: 'process_memory_usage_bytes', label: 'Memory', defaultSort: false }
+      // ]
+    };
+
     return (
       <div className="nodes-grid" style={cmpStyle}>
-        <table style={{width: this.props.width}}>
-          <thead>
-            <tr>
-              {COLUMNS.map(({label, key, style}) => (
-                <th style={style} key={key}>{label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-          {nodes.toList().map((n, i) => (
-            <tr style={rowStyle} key={n.get('id')}>
-              {COLUMNS.map(({key, style}) => {
-                if (i === 0 && key === 'graph') {
-                  return graph(Object.assign({key}, graphProps));
-                }
-                return (
-                  <td key={key} className="truncate" style={style}>
-                    {n.get(key)}
-                  </td>
-                );
-              })}
-            </tr>))}
-          </tbody>
-        </table>
+        <div className="nodes-grid-table">
+          <NodeDetailsTable {...detailsData} />
+        </div>
+        {graph(graphProps)}
       </div>
     );
   }

@@ -61,7 +61,7 @@ export default class NodesChart extends React.Component {
       // re-apply cached canvas zoom/pan to d3 behavior (or set defaul values)
       const defaultZoom = { scale: 1, panTranslateX: 0, panTranslateY: 0, hasZoomed: false };
       const nextZoom = this.state.zoomCache[nextProps.topologyId] || defaultZoom;
-      if (nextZoom) {
+      if (nextZoom && this.zoom) {
         this.zoom.scale(nextZoom.scale);
         this.zoom.translate([nextZoom.panTranslateX, nextZoom.panTranslateY]);
       }

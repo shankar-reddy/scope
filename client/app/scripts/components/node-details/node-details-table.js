@@ -101,8 +101,10 @@ export default class NodeDetailsTable extends React.Component {
         headers[0].width = 66;
       } else if (headers.length === 3) {
         headers[0].width = 50;
-      } else if (headers.length >= 3) {
+      } else if (headers.length >= 3 && headers.length < 5) {
         headers[0].width = 33;
+      } else if (headers.length >= 5) {
+        headers[0].width = 20;
       }
 
       return (
