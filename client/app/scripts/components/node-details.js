@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 
 import NodeDetailsControls from './node-details/node-details-controls';
@@ -111,12 +110,6 @@ export default class NodeDetails extends React.Component {
         </div>
       </div>
     );
-  }
-
-  renderTable(table) {
-    const key = _.snakeCase(table.title);
-    return (<NodeDetailsTable title={table.title} key={key} rows={table.rows}
-      isNumeric={table.numeric} />);
   }
 
   render() {

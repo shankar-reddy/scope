@@ -6,6 +6,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import reactMixin from 'react-mixin';
 import { Map as makeMap, fromJS, is as isDeepEqual } from 'immutable';
 import timely from 'timely';
+import { Set as makeSet } from 'immutable';
 
 import { clickBackground } from '../actions/app-actions';
 import { EDGE_ID_SEPARATOR } from '../constants/naming';
@@ -98,6 +99,10 @@ export default class NodesChart extends React.Component {
 
   componentDidMount() {
     // distinguish pan/zoom from click
+    if (this.props.noZoom) {
+      return;
+    }
+
     this.isZooming = false;
 
     this.zoom = d3.behavior.zoom()
@@ -109,6 +114,10 @@ export default class NodesChart extends React.Component {
   }
 
   componentWillUnmount() {
+    if (this.props.noZoom) {
+      return;
+    }
+
     // undoing .call(zoom)
     d3.select('.nodes-chart svg')
       .on('mousedown.zoom', null)
@@ -298,8 +307,10 @@ export default class NodesChart extends React.Component {
 
   restoreLayout(state) {
     // undo any pan/zooming that might have happened
-    this.zoom.scale(state.scale);
-    this.zoom.translate([state.panTranslateX, state.panTranslateY]);
+    if (this.zoom) {
+      this.zoom.scale(state.scale);
+      this.zoom.translate([state.panTranslateX, state.panTranslateY]);
+    }
 
     const nodes = state.nodes.map(node => node.merge({
       x: node.get('px'),
@@ -409,5 +420,14 @@ export default class NodesChart extends React.Component {
     }
   }
 }
+
+NodesChart.defaultProps = {
+  margins: {top: 0, left: 0, right: 0, bottom: 0},
+  highlightedNodeIds: makeSet(),
+  highlightedEdgeIds: makeSet(),
+  layoutPrecision: 3,
+  topologyId: Math.random(),
+  noZoom: false,
+};
 
 reactMixin.onClass(NodesChart, PureRenderMixin);

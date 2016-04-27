@@ -1,5 +1,6 @@
 import dagre from 'dagre';
 import debug from 'debug';
+import d3 from 'd3';
 import { fromJS, Map as makeMap, Set as ImmSet } from 'immutable';
 
 import { EDGE_ID_SEPARATOR } from '../constants/naming';
@@ -50,7 +51,8 @@ function runLayoutEngine(graph, imNodes, imEdges, opts) {
   graph.setGraph({
     nodesep,
     ranksep,
-    rankdir: 'LR'
+    rankdir: 'LR',
+    align: 'UL'
   });
 
   // add nodes to the graph if not already there
@@ -268,17 +270,24 @@ function uniqueRowConstraint(layout, options) {
   const result = Object.assign({}, layout);
   const scale = options.scale || DEFAULT_SCALE;
   const nodeHeight = scale(NODE_SIZE_FACTOR);
+  const nodeWidth = scale(NODE_SIZE_FACTOR);
   const margins = options.margins || DEFAULT_MARGINS;
 
-  const rowHeight = nodeHeight;
+  const rowHeight = options.height / layout.nodes.size;
   const nodeOrder = makeMap(layout.nodes
                             .toList()
                             .sortBy(n => n.get('y'))
                             .map((n, i) => [n.get('id'), i]));
+  const nodeXs = layout.nodes.map(n => n.get('x')).toList().toJS();
+  console.log(nodeXs);
+  const xScale = d3.scale.linear()
+    .domain(d3.extent(nodeXs))
+    .range([nodeWidth, options.width - nodeWidth])
+    .clamp(false);
 
   result.nodes = layout.nodes.map(node => node.merge({
-    x: node.get('x'),
-    y: nodeOrder.get(node.get('id')) * rowHeight + nodeHeight * 0.5 + margins.top
+    x: xScale(node.get('x')),
+    y: nodeOrder.get(node.get('id')) * rowHeight + nodeHeight * 0.5 + margins.top + 2
   }));
 
   result.edges = layout.edges.map(edge => (

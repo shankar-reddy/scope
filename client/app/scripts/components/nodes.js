@@ -2,7 +2,8 @@ import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import reactMixin from 'react-mixin';
 
-import NodesChart from '../charts/nodes-chart';
+// import NodesChart from '../charts/nodes-chart';
+import NodesGrid from '../charts/nodes-grid';
 import NodesError from '../charts/nodes-error';
 import { CANVAS_MARGINS } from '../constants/styles';
 
@@ -71,7 +72,10 @@ export default class Nodes extends React.Component {
     return (
       <div className="nodes-wrapper">
         {topologyEmpty && errorEmpty}
-        <NodesChart {...this.props} {...this.state}
+        <NodesGrid {...this.props} {...this.state}
+          nodeSize="24"
+          width={1300}
+          height={780}
           margins={CANVAS_MARGINS}
           layoutPrecision={layoutPrecision}
           hasSelectedNode={hasSelectedNode}

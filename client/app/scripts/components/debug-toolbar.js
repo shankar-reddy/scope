@@ -112,7 +112,7 @@ function startPerf(delay) {
 }
 
 
-export function makeNodes(n, prefix, maxConns = 4) {
+export function makeNodes(n, prefix, maxConns = 4, shape = null) {
   const ns = AppStore.getNodes();
   const nodeNames = ns.keySeq().toJS();
   const newNodeNames = _.range(ns.size, ns.size + n).map(i => (
@@ -123,7 +123,7 @@ export function makeNodes(n, prefix, maxConns = 4) {
   return newNodeNames.map((name) => deltaAdd(
     name,
     sample(allNodes, maxConns),
-    _.sample(SHAPES),
+    shape || _.sample(SHAPES),
     _.sample(STACK_VARIANTS),
     _.sample(NODE_COUNTS)
   ));

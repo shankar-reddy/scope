@@ -3,7 +3,7 @@ import React from 'react';
 import _ from 'lodash';
 import NodesChart from '../charts/nodes-chart';
 import NodesGrid from '../charts/nodes-grid';
-import { deltaAdd } from './debug-toolbar';
+import { deltaAdd, makeNodes } from './debug-toolbar';
 import { fromJS, Map as makeMap, Set as makeSet } from 'immutable';
 
 
@@ -12,6 +12,9 @@ function clog(v) {
   return v;
 }
 
+function randomGraph(n) {
+  return makeMap(makeNodes(n, 'ewq', 4, 'hexagon').map(d => [d.id, fromJS(d)]));
+}
 
 function deltaAddSimple(name, adjacency = []) {
   return deltaAdd(name, adjacency, 'circle', false, 1, '');
@@ -127,14 +130,10 @@ function variants() {
 
 
 function gridView() {
-  const nodes = proxyGraph(3).map(node => node.remove('label'));
+  const nodes = randomGraph(50).map(node => node.remove('label').remove('label_minor'));
+  const nodeSize = 24;
   return (
-    <div className="nodes-grid">
-      <NodesGrid nodes={nodes} />
-      {chart(nodes, 4, {width: 300, height: 500},
-             {top: 36, left: 0, right: 0, bottom: 0},
-            36)}
-    </div>
+    <NodesGrid width="500" height="500" nodeSize={nodeSize} nodes={nodes} />
   );
 }
 
@@ -144,7 +143,7 @@ export class Examples extends React.Component {
     return (
       <div className="examples">
         {gridView()}
-        {true && variants()}
+        {false && variants()}
       </div>
     );
   }
