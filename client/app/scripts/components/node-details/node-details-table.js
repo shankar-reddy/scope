@@ -2,12 +2,13 @@ import _ from 'lodash';
 import React from 'react';
 
 import ShowMore from '../show-more';
-import NodeDetailsTableNodeLink from './node-details-table-node-link';
-import NodeDetailsTableNodeMetric from './node-details-table-node-metric';
+import NodeDetailsTableRow from './node-details-table-row';
+
 
 function isNumberField(field) {
   return field.dataType && field.dataType === 'number';
 }
+
 
 export default class NodeDetailsTable extends React.Component {
 
@@ -75,20 +76,6 @@ export default class NodeDetailsTable extends React.Component {
     return -1e-10; // just under 0 to treat missing values differently from 0
   }
 
-  getValuesForNode(node) {
-    const values = {};
-    ['metrics', 'metadata'].forEach(collection => {
-      if (node[collection]) {
-        node[collection].forEach(field => {
-          const result = Object.assign({}, field);
-          result.valueType = collection;
-          values[field.id] = result;
-        });
-      }
-    });
-    return values;
-  }
-
   renderHeaders() {
     if (this.props.nodes && this.props.nodes.length > 0) {
       const columns = this.props.columns || [];
@@ -147,35 +134,14 @@ export default class NodeDetailsTable extends React.Component {
     return '';
   }
 
-  renderValues(node) {
-    const fields = this.getValuesForNode(node);
-    const columns = this.props.columns || [];
-    return columns.map(({id}) => {
-      const field = fields[id];
-      if (field) {
-        if (field.valueType === 'metadata') {
-          return (
-            <td className="node-details-table-node-value truncate" title={field.value}
-              key={field.id}>
-              {field.value}
-            </td>
-          );
-        }
-        return <NodeDetailsTableNodeMetric key={field.id} {...field} />;
-      }
-      // empty cell to complete the row for proper hover
-      return <td className="node-details-table-node-value" key={id} />;
-    });
-  }
-
   render() {
     const headers = this.renderHeaders();
-    const { nodeIdKey } = this.props;
+    const { nodeIdKey, columns, topologyId, onMouseOverRow } = this.props;
     let nodes = _.sortBy(this.props.nodes, this.getValueForSortBy, 'label',
       this.getMetaDataSorters());
     const limited = nodes && this.state.limit > 0 && nodes.length > this.state.limit;
     const expanded = this.state.limit === 0;
-    const notShown = nodes.length - this.DEFAULT_LIMIT;
+    const notShown = nodes.length - this.state.limit;
     if (this.state.sortedDesc) {
       nodes.reverse();
     }
@@ -190,23 +156,22 @@ export default class NodeDetailsTable extends React.Component {
             {headers}
           </thead>
           <tbody>
-          {nodes && nodes.map(node => {
-            const values = this.renderValues(node);
-            const nodeId = node[nodeIdKey];
-            return (
-              <tr className="node-details-table-node" key={node.id}>
-                <td className="node-details-table-node-label truncate">
-                  <NodeDetailsTableNodeLink {...node} topologyId={this.props.topologyId}
-                    nodeId={nodeId} />
-                </td>
-                {values}
-              </tr>
-            );
-          })}
+            {nodes && nodes.map(node => (
+              <NodeDetailsTableRow
+                key={node.id}
+                node={node}
+                nodeIdKey={nodeIdKey}
+                columns={columns}
+                onMouseOverRow={onMouseOverRow}
+                topologyId={topologyId} />
+            ))}
           </tbody>
         </table>
-        <ShowMore handleClick={this.handleLimitClick} collection={this.props.nodes}
-          expanded={expanded} notShown={notShown} />
+        <ShowMore
+          handleClick={this.handleLimitClick}
+          collection={this.props.nodes}
+          expanded={expanded}
+          notShown={notShown} />
       </div>
     );
   }

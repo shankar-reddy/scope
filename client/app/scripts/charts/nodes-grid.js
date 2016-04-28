@@ -4,6 +4,7 @@ import React from 'react';
 import { Set as makeSet, List as makeList, Map as makeMap } from 'immutable';
 import NodesChart from './nodes-chart';
 import NodeDetailsTable from '../components/node-details/node-details-table';
+import { enterNode, leaveNode } from '../actions/app-actions';
 
 
 function graph(props) {
@@ -24,12 +25,20 @@ function getColumns(nodes) {
       .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
     return metadata.concat(metrics);
   });
-  console.log('allColumns', allColumns.toJS());
   return makeSet(allColumns).toJS();
 }
 
 
 export default class NodesGrid extends React.Component {
+
+  onMouseOverRow(node) {
+    enterNode(node.id);
+  }
+
+  onMouseOut() {
+    leaveNode();
+  }
+
   render() {
     const {margins, nodes, height, nodeSize} = this.props;
     const rowStyle = { height: nodeSize };
@@ -55,17 +64,15 @@ export default class NodesGrid extends React.Component {
       id: '',
       nodes: nodes.toList().toJS(),
       columns: getColumns(nodes)
-      // columns: [
-        // { id: 'pid', label: 'PID', defaultSort: false },
-        // { id: 'process_cpu_usage_percent', label: 'CPU', defaultSort: false },
-        // { id: 'process_memory_usage_bytes', label: 'Memory', defaultSort: false }
-      // ]
     };
 
     return (
       <div className="nodes-grid" style={cmpStyle}>
-        <div className="nodes-grid-table">
-          <NodeDetailsTable {...detailsData} limit={-1} />
+        <div onMouseOut={this.onMouseOut} className="nodes-grid-table">
+          <NodeDetailsTable
+            onMouseOverRow={this.onMouseOverRow}
+            {...detailsData}
+            limit={1000} />
         </div>
         {graph(graphProps)}
       </div>
