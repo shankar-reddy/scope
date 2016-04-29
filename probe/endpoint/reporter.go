@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/weaveworks/scope/probe/endpoint/procspy"
@@ -102,6 +103,8 @@ func (r *Reporter) Report() (report.Report, error) {
 		SpyDuration.WithLabelValues().Observe(float64(time.Since(begin)))
 	}(time.Now())
 
+	log.Info("Running updated version 2")
+
 	hostNodeID := report.MakeHostNodeID(r.hostID)
 	rpt := report.MakeReport()
 	seenTuples := map[string]fourTuple{}
@@ -120,6 +123,17 @@ func (r *Reporter) Report() (report.Report, error) {
 			}
 			seenTuples[tuple.key()] = tuple
 			r.addConnection(&rpt, tuple, extraNodeInfo, extraNodeInfo)
+			if f.Original.Layer3.DstIP != f.Reply.Layer3.SrcIP {
+				log.Infof("Adding Normal %s:%d -> %s:%d", f.Reply.Layer3.DstIP, uint16(f.Reply.Layer4.DstPort), f.Reply.Layer3.SrcIP, uint16(f.Reply.Layer4.SrcPort))
+				reply_tuple := fourTuple{
+					f.Reply.Layer3.DstIP,
+					f.Reply.Layer3.SrcIP,
+					uint16(f.Reply.Layer4.DstPort),
+					uint16(f.Reply.Layer4.SrcPort),
+				}
+				r.addConnection(&rpt, reply_tuple, extraNodeInfo, extraNodeInfo)
+			}
+
 		})
 	}
 

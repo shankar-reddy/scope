@@ -3,6 +3,8 @@ package endpoint
 import (
 	"strconv"
 
+	log "github.com/Sirupsen/logrus"
+
 	"github.com/weaveworks/scope/report"
 )
 
@@ -42,6 +44,9 @@ func toMapping(f flow) *endpointMapping {
 			rewrittenPort: f.Reply.Layer4.DstPort,
 		}
 	}
+	if false {
+		log.Info("NAT!", f.Reply.Layer3.DstIP, uint16(f.Reply.Layer4.DstPort), f.Reply.Layer3.SrcIP, uint16(f.Reply.Layer4.SrcPort))
+	}
 
 	return &mapping
 }
@@ -58,6 +63,7 @@ func (n natMapper) applyNAT(rpt report.Report, scope string) {
 			node, ok         = rpt.Endpoint.Nodes[realEndpointID]
 		)
 		if !ok {
+			log.Infof("NAT not found! %s %s %s %s", f.Reply.Layer3.DstIP, uint16(f.Reply.Layer4.DstPort), f.Reply.Layer3.SrcIP, uint16(f.Reply.Layer4.SrcPort))
 			return
 		}
 
