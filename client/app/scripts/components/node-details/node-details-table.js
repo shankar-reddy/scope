@@ -11,6 +11,65 @@ function isNumberField(field) {
 }
 
 
+function getDefaultSortBy(columns, nodes) {
+  // default sorter specified by columns
+  const defaultSortColumn = _.find(columns, {defaultSort: true});
+  if (defaultSortColumn) {
+    return defaultSortColumn.id;
+  }
+  // otherwise choose first metric
+  return _.get(nodes, [0, 'metrics', 0, 'id']);
+}
+
+
+function getValueForSortBy(sortBy) {
+  // return the node's value based on the sortBy field
+  return (node) => {
+    if (sortBy !== null) {
+      const field = _.union(node.metrics, node.metadata).find(f => f.id === sortBy);
+      if (field) {
+        if (isNumberField(field)) {
+          return parseFloat(field.value);
+        }
+        return field.value;
+      }
+    }
+    return -1e-10; // just under 0 to treat missing values differently from 0
+  };
+}
+
+
+/*
+function getMetaDataSorters(nodes) {
+  // returns an array of sorters that will take a node
+  return _.get(nodes, [0, 'metadata'], []).map((field, index) => node => {
+    const nodeMetadataField = node.metadata[index];
+    if (nodeMetadataField) {
+      if (isNumberField(nodeMetadataField)) {
+        return parseFloat(nodeMetadataField.value);
+      }
+      return nodeMetadataField.value;
+    }
+    return null;
+  });
+}
+*/
+
+
+function getSortedNodes(nodes, columns, sortBy, sortedDesc) {
+  const sortedNodes = _.sortBy(
+    nodes,
+    getValueForSortBy(sortBy || getDefaultSortBy(columns, nodes)),
+    'label'
+    // getMetaDataSorters(nodes)
+  );
+  if (sortedDesc) {
+    sortedNodes.reverse();
+  }
+  return sortedNodes;
+}
+
+
 export default class NodeDetailsTable extends React.Component {
 
   constructor(props, context) {
@@ -22,7 +81,6 @@ export default class NodeDetailsTable extends React.Component {
       sortBy: null
     };
     this.handleLimitClick = this.handleLimitClick.bind(this);
-    this.getValueForSortBy = this.getValueForSortBy.bind(this);
   }
 
   handleHeaderClick(ev, headerId) {
@@ -39,50 +97,11 @@ export default class NodeDetailsTable extends React.Component {
     this.setState({limit});
   }
 
-  getDefaultSortBy() {
-    // default sorter specified by columns
-    const defaultSortColumn = _.find(this.props.columns, {defaultSort: true});
-    if (defaultSortColumn) {
-      return defaultSortColumn.id;
-    }
-    // otherwise choose first metric
-    return _.get(this.props.nodes, [0, 'metrics', 0, 'id']);
-  }
-
-  getMetaDataSorters() {
-    // returns an array of sorters that will take a node
-    return _.get(this.props.nodes, [0, 'metadata'], []).map((field, index) => node => {
-      const nodeMetadataField = node.metadata[index];
-      if (nodeMetadataField) {
-        if (isNumberField(nodeMetadataField)) {
-          return parseFloat(nodeMetadataField.value);
-        }
-        return nodeMetadataField.value;
-      }
-      return null;
-    });
-  }
-
-  getValueForSortBy(node) {
-    // return the node's value based on the sortBy field
-    const sortBy = this.state.sortBy || this.getDefaultSortBy();
-    if (sortBy !== null) {
-      const field = _.union(node.metrics, node.metadata).find(f => f.id === sortBy);
-      if (field) {
-        if (isNumberField(field)) {
-          return parseFloat(field.value);
-        }
-        return field.value;
-      }
-    }
-    return -1e-10; // just under 0 to treat missing values differently from 0
-  }
-
   renderHeaders() {
     if (this.props.nodes && this.props.nodes.length > 0) {
       const columns = this.props.columns || [];
       const headers = [{id: 'label', label: this.props.label}].concat(columns);
-      const defaultSortBy = this.getDefaultSortBy();
+      const defaultSortBy = getDefaultSortBy(this.props);
 
       // Beauty hack: adjust first column width if there are only few columns;
       // this assumes the other columns are narrow metric columns of 20% table width
@@ -136,19 +155,11 @@ export default class NodeDetailsTable extends React.Component {
     return '';
   }
 
-  getSortedNodes() {
-    const nodes = _.sortBy(this.props.nodes, this.getValueForSortBy, 'label',
-      this.getMetaDataSorters());
-    if (this.state.sortedDesc) {
-      nodes.reverse();
-    }
-    return nodes;
-  }
-
   render() {
     const headers = this.renderHeaders();
     const { nodeIdKey, columns, topologyId, onMouseOverRow } = this.props;
-    let nodes = this.getSortedNodes();
+    let nodes = getSortedNodes(this.props.nodes, this.props.columns, this.state.sortBy,
+                                    this.state.sortedDesc);
     const limited = nodes && this.state.limit > 0 && nodes.length > this.state.limit;
     const expanded = this.state.limit === 0;
     const notShown = nodes.length - this.state.limit;
