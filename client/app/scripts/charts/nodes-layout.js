@@ -274,7 +274,7 @@ function uniqueRowConstraint(layout, options) {
   const margins = options.margins || DEFAULT_MARGINS;
 
   const rowHeight = options.height / layout.nodes.size;
-  const nodeOrder = makeMap(layout.nodes
+  const nodeOrder = options.nodeOrder || makeMap(layout.nodes
                             .toList()
                             .sortBy(n => n.get('y'))
                             .map((n, i) => [n.get('id'), i]));

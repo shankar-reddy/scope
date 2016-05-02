@@ -339,7 +339,7 @@ export default class NodesChart extends React.Component {
     const stateEdges = this.initEdges(props.nodes, stateNodes);
     const nodeScale = this.getNodeScale(props.nodes, state.width, state.height);
     const nextState = { nodeScale };
-    const nodeOrder = makeMap(stateNodes
+    const nodeOrder = props.nodeOrder || makeMap(stateNodes
       .toList()
       .sortBy(n => n.get('label'))
       .map((n, i) => [n.get('id'), i]));
