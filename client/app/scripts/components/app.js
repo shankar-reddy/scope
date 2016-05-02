@@ -55,7 +55,8 @@ function getStateFromStores() {
     version: AppStore.getVersion(),
     versionUpdate: AppStore.getVersionUpdate(),
     plugins: AppStore.getPlugins(),
-    websocketClosed: AppStore.isWebsocketClosed()
+    websocketClosed: AppStore.isWebsocketClosed(),
+    tableSortOrder: AppStore.getTableSortOrder()
   };
 }
 
@@ -164,6 +165,7 @@ export default class App extends React.Component {
           topMargin={topMargin}
           topCardNode={topCardNode}
           selectedMetric={this.state.selectedMetric}
+          nodeOrder={this.state.tableSortOrder}
           forceRelayout={this.state.forceRelayout}
           topologyOptions={this.state.activeTopologyOptions}
           topologyEmpty={this.state.topologyEmpty}

@@ -29,6 +29,13 @@ export function toggleHelp() {
   }
 }
 
+export function sortOrderChanged(newOrder) {
+  AppDispatcher.dispatch({
+    type: ActionTypes.SORT_ORDER_CHANGED,
+    newOrder
+  });
+}
+
 export function selectMetric(metricId) {
   AppDispatcher.dispatch({
     type: ActionTypes.SELECT_METRIC,

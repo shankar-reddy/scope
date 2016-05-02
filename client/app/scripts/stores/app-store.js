@@ -61,6 +61,7 @@ let controlPipes = makeOrderedMap(); // pipeId -> controlPipe
 let updatePausedAt = null; // Date
 let websocketClosed = true;
 let showingHelp = false;
+let tableSortOrder = null;
 
 let selectedMetric = null;
 let pinnedMetric = selectedMetric;
@@ -150,6 +151,10 @@ export class AppStore extends Store {
       topologyId: currentTopologyId,
       topologyOptions: topologyOptions.toJS() // all options
     };
+  }
+
+  getTableSortOrder() {
+    return tableSortOrder;
   }
 
   getShowingHelp() {
@@ -348,6 +353,11 @@ export class AppStore extends Store {
         this.__emitChange();
         break;
       }
+      case ActionTypes.SORT_ORDER_CHANGED: {
+        tableSortOrder = makeMap((payload.newOrder || []).map((n, i) => [n.id, i]));
+        this.__emitChange();
+        break;
+      }
       case ActionTypes.CLICK_CLOSE_TERMINAL: {
         controlPipes = controlPipes.clear();
         this.__emitChange();
@@ -425,6 +435,7 @@ export class AppStore extends Store {
           nodes = nodes.clear();
         }
         availableCanvasMetrics = makeList();
+        tableSortOrder = null;
         this.__emitChange();
         break;
       }
@@ -436,6 +447,8 @@ export class AppStore extends Store {
           nodes = nodes.clear();
         }
         availableCanvasMetrics = makeList();
+        tableSortOrder = null;
+
         this.__emitChange();
         break;
       }

@@ -3,6 +3,7 @@ import React from 'react';
 
 import ShowMore from '../show-more';
 import NodeDetailsTableRow from './node-details-table-row';
+import { sortOrderChanged } from '../../actions/app-actions';
 
 
 function isNumberField(field) {
@@ -30,6 +31,7 @@ export default class NodeDetailsTable extends React.Component {
       ? !this.state.sortedDesc : this.state.sortedDesc;
     const sortBy = headerId;
     this.setState({sortBy, sortedDesc});
+    sortOrderChanged({sortBy, sortedDesc});
   }
 
   handleLimitClick() {
@@ -134,17 +136,22 @@ export default class NodeDetailsTable extends React.Component {
     return '';
   }
 
-  render() {
-    const headers = this.renderHeaders();
-    const { nodeIdKey, columns, topologyId, onMouseOverRow } = this.props;
-    let nodes = _.sortBy(this.props.nodes, this.getValueForSortBy, 'label',
+  getSortedNodes() {
+    const nodes = _.sortBy(this.props.nodes, this.getValueForSortBy, 'label',
       this.getMetaDataSorters());
-    const limited = nodes && this.state.limit > 0 && nodes.length > this.state.limit;
-    const expanded = this.state.limit === 0;
-    const notShown = nodes.length - this.state.limit;
     if (this.state.sortedDesc) {
       nodes.reverse();
     }
+    return nodes;
+  }
+
+  render() {
+    const headers = this.renderHeaders();
+    const { nodeIdKey, columns, topologyId, onMouseOverRow } = this.props;
+    let nodes = this.getSortedNodes();
+    const limited = nodes && this.state.limit > 0 && nodes.length > this.state.limit;
+    const expanded = this.state.limit === 0;
+    const notShown = nodes.length - this.state.limit;
     if (nodes && limited) {
       nodes = nodes.slice(0, this.state.limit);
     }

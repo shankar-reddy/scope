@@ -278,8 +278,8 @@ function uniqueRowConstraint(layout, options) {
                             .toList()
                             .sortBy(n => n.get('y'))
                             .map((n, i) => [n.get('id'), i]));
+
   const nodeXs = layout.nodes.map(n => n.get('x')).toList().toJS();
-  console.log(nodeXs);
   const xScale = d3.scale.linear()
     .domain(d3.extent(nodeXs))
     .range([nodeWidth, options.width - nodeWidth])
@@ -394,7 +394,7 @@ export function doLayout(immNodes, immEdges, opts) {
   let layout;
 
   ++layoutRuns;
-  if (!options.forceRelayout && cachedLayout && nodeCache && edgeCache
+  if (false && !options.forceRelayout && cachedLayout && nodeCache && edgeCache
     && !hasUnseenNodes(immNodes, nodeCache)) {
     log('skip layout, trivial adjustment', ++layoutRunsTrivial, layoutRuns);
     layout = cloneLayout(cachedLayout, immNodes, immEdges);
