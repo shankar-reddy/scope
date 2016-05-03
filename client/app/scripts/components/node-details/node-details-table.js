@@ -174,9 +174,11 @@ export default class NodeDetailsTable extends React.Component {
       React.cloneElement(child, { nodeOrder })
     ));
 
+    console.log(this.props.selectedRowId);
+
     return (
       <div className="node-details-table-wrapper-wrapper" style={this.props.style}>
-        <div className="node-details-table-wrapper">
+        <div className="node-details-table-wrapper" onMouseOut={this.props.onMouseOut}>
           <table className="node-details-table">
             <thead>
               {headers}
@@ -185,6 +187,7 @@ export default class NodeDetailsTable extends React.Component {
               {nodes && nodes.map(node => (
                 <NodeDetailsTableRow
                   key={node.id}
+                  selected={this.props.highlightedNodeIds.has(node.id)}
                   node={node}
                   nodeIdKey={nodeIdKey}
                   columns={columns}

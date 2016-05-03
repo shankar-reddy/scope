@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 
 import NodeDetailsTableNodeLink from './node-details-table-node-link';
 import NodeDetailsTableNodeMetric from './node-details-table-node-metric';
@@ -52,11 +53,12 @@ export default class NodeDetailsTableRow extends React.Component {
   }
 
   render() {
-    const { node, nodeIdKey, topologyId, columns, onMouseOverRow } = this.props;
+    const { node, nodeIdKey, topologyId, columns, onMouseOverRow, selected } = this.props;
     const values = renderValues(node, columns);
     const nodeId = node[nodeIdKey];
+    const className = classNames('node-details-table-node', { selected });
     return (
-      <tr onMouseOver={onMouseOverRow && this.onMouseOver} className="node-details-table-node">
+      <tr onMouseOver={onMouseOverRow && this.onMouseOver} className={className}>
         <td className="node-details-table-node-label truncate">
           <NodeDetailsTableNodeLink
             topologyId={topologyId}

@@ -807,7 +807,7 @@ h2 {
       font-size: 105%;
       line-height: 1.5;
 
-      &:hover {
+      &:hover, &.selected {
         background-color: lighten(@background-color, 5%);
       }
 
@@ -1262,6 +1262,12 @@ h2 {
 
     .node-details-table-node, thead tr {
       height: 24px;
+    }
+
+    .node-details-table-node {
+      &:hover, &.selected {
+        background-color: @background-darker-color;
+      }
     }
 
   }

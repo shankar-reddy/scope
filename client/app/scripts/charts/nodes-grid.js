@@ -73,8 +73,10 @@ export default class NodesGrid extends React.Component {
       <div className="nodes-grid">
         <NodeDetailsTable
           style={cmpStyle}
+          onMouseOut={this.onMouseOut}
           onMouseOverRow={this.onMouseOverRow}
           {...detailsData}
+          highlightedNodeIds={this.props.highlightedNodeIds}
           limit={1000}>
           <MiniChart {...graphProps} />
         </NodeDetailsTable>

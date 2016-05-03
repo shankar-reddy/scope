@@ -96,7 +96,7 @@ export default class Node extends React.Component {
           x={-nodeScale(scaleFactor * 0.5)}
           y={-nodeScale(scaleFactor * 0.5)}
           width={nodeScale(scaleFactor)}
-          height={nodeScale(scaleFactor) + subLabelOffsetY}
+          height={nodeScale(scaleFactor)}
           />
         <text className="node-label" textAnchor="middle" style={{fontSize: labelFontSize}}
           x="0" y={labelOffsetY + nodeScale(0.5 * scaleFactor)}>
