@@ -79,13 +79,13 @@ export default class NodesChart extends React.Component {
     }
 
     // reset layout dimensions only when forced
-    state.height = nextProps.forceRelayout ? nextProps.height : (state.height || nextProps.height);
-    state.width = nextProps.forceRelayout ? nextProps.width : (state.width || nextProps.width);
+    state.height = nextProps.height;
+    state.width = nextProps.width;
 
-    // _.assign(state, this.updateGraphState(nextProps, state));
-    if (nextProps.forceRelayout || nextProps.nodes !== this.props.nodes) {
-      _.assign(state, this.updateGraphState(nextProps, state));
-    }
+    _.assign(state, this.updateGraphState(nextProps, state));
+    // if (nextProps.forceRelayout || nextProps.nodes !== this.props.nodes) {
+      // _.assign(state, this.updateGraphState(nextProps, state));
+    // }
 
     if (this.props.selectedNodeId !== nextProps.selectedNodeId) {
       _.assign(state, this.restoreLayout(state));
@@ -339,6 +339,7 @@ export default class NodesChart extends React.Component {
     const stateEdges = this.initEdges(props.nodes, stateNodes);
     const nodeScale = this.getNodeScale(props.nodes, state.width, state.height);
     const nextState = { nodeScale };
+    console.log(props.nodeOrder);
     const nodeOrder = props.nodeOrder || makeMap(stateNodes
       .toList()
       .sortBy(n => n.get('label'))
@@ -355,6 +356,7 @@ export default class NodesChart extends React.Component {
       nodeOrder
     };
 
+    console.log('nodes-chart', state.height);
     const timedLayouter = timely(doLayout);
     const graph = timedLayouter(stateNodes, stateEdges, options);
 

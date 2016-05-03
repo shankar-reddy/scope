@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import { Map as makeMap } from 'immutable';
 
 import ShowMore from '../show-more';
 import NodeDetailsTableRow from './node-details-table-row';
@@ -167,29 +168,38 @@ export default class NodeDetailsTable extends React.Component {
       nodes = nodes.slice(0, this.state.limit);
     }
 
+    const nodeOrderJS = (nodes || []).map((n, i) => [n.id, i]);
+    const nodeOrder = makeMap(nodeOrderJS);
+    const childrenWithProps = React.Children.map(this.props.children, (child) => (
+      React.cloneElement(child, { nodeOrder })
+    ));
+
     return (
-      <div className="node-details-table-wrapper">
-        <table className="node-details-table">
-          <thead>
-            {headers}
-          </thead>
-          <tbody>
-            {nodes && nodes.map(node => (
-              <NodeDetailsTableRow
-                key={node.id}
-                node={node}
-                nodeIdKey={nodeIdKey}
-                columns={columns}
-                onMouseOverRow={onMouseOverRow}
-                topologyId={topologyId} />
-            ))}
-          </tbody>
-        </table>
-        <ShowMore
-          handleClick={this.handleLimitClick}
-          collection={this.props.nodes}
-          expanded={expanded}
-          notShown={notShown} />
+      <div className="node-details-table-wrapper-wrapper" style={this.props.style}>
+        <div className="node-details-table-wrapper">
+          <table className="node-details-table">
+            <thead>
+              {headers}
+            </thead>
+            <tbody>
+              {nodes && nodes.map(node => (
+                <NodeDetailsTableRow
+                  key={node.id}
+                  node={node}
+                  nodeIdKey={nodeIdKey}
+                  columns={columns}
+                  onMouseOverRow={onMouseOverRow}
+                  topologyId={topologyId} />
+              ))}
+            </tbody>
+          </table>
+          <ShowMore
+            handleClick={this.handleLimitClick}
+            collection={this.props.nodes}
+            expanded={expanded}
+            notShown={notShown} />
+        </div>
+        {childrenWithProps}
       </div>
     );
   }

@@ -285,6 +285,7 @@ function uniqueRowConstraint(layout, options) {
     .range([nodeWidth, options.width - nodeWidth])
     .clamp(false);
 
+  console.log('uniqueRowConstraint', options.height);
   result.nodes = layout.nodes.map(node => node.merge({
     x: xScale(node.get('x')),
     y: nodeOrder.get(node.get('id')) * rowHeight + nodeHeight * 0.5 + margins.top + 2

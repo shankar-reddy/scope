@@ -15,5 +15,5 @@ export const CANVAS_MARGINS = {
   top: 130,
   left: 40,
   right: 40,
-  bottom: 60,
+  bottom: 100,
 };

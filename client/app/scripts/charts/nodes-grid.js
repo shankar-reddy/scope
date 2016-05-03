@@ -1,4 +1,4 @@
-/* eslint react/jsx-no-bind: "off" */
+/* eslint react/jsx-no-bind: "off", no-multi-comp: "off" */
 
 import React from 'react';
 import { Set as makeSet, List as makeList, Map as makeMap } from 'immutable';
@@ -7,7 +7,7 @@ import NodeDetailsTable from '../components/node-details/node-details-table';
 import { enterNode, leaveNode } from '../actions/app-actions';
 
 
-function graph(props) {
+function MiniChart(props) {
   const {width, height} = props;
   return (
     <div style={{height, width}} className="nodes-grid-graph">
@@ -15,6 +15,9 @@ function graph(props) {
     </div>
   );
 }
+
+
+const IGNORED_COLUMNS = ['docker_container_ports'];
 
 
 function getColumns(nodes) {
@@ -25,7 +28,7 @@ function getColumns(nodes) {
       .map(m => makeMap({ id: m.get('id'), label: m.get('label') }));
     return metadata.concat(metrics);
   });
-  return makeSet(allColumns).toJS();
+  return makeSet(allColumns).filter(n => !IGNORED_COLUMNS.includes(n.get('id'))).toJS();
 }
 
 
@@ -67,14 +70,14 @@ export default class NodesGrid extends React.Component {
     };
 
     return (
-      <div className="nodes-grid" style={cmpStyle}>
-        <div onMouseOut={this.onMouseOut} className="nodes-grid-table">
-          <NodeDetailsTable
-            onMouseOverRow={this.onMouseOverRow}
-            {...detailsData}
-            limit={1000} />
-        </div>
-        {graph(graphProps)}
+      <div className="nodes-grid">
+        <NodeDetailsTable
+          style={cmpStyle}
+          onMouseOverRow={this.onMouseOverRow}
+          {...detailsData}
+          limit={1000}>
+          <MiniChart {...graphProps} />
+        </NodeDetailsTable>
       </div>
     );
   }
