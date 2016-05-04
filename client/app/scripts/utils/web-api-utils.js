@@ -179,19 +179,28 @@ export function getApiDetails(dispatch) {
   });
 }
 
-export function doControlRequest(nodeId, control, dispatch) {
+export function doControlRequest(nodeId, control, args, dispatch) {
   clearTimeout(controlErrorTimer);
   const url = `api/control/${encodeURIComponent(control.probeId)}/`
     + `${encodeURIComponent(control.nodeId)}/${control.id}`;
   reqwest({
     method: 'POST',
     url,
+    type: 'json',
+    contentType: 'application/json',
+    data: JSON.stringify(args),
     success: (res) => {
       dispatch(receiveControlSuccess(nodeId));
       if (res) {
         if (res.pipe) {
           dispatch(receiveControlPipe(res.pipe, nodeId, res.raw_tty, true));
         }
+        // TODO: If it's a raw pipe display a popup. The instructions template
+        //       (res.raw_pipe_template) will include a placeholder ('%pipe_url')
+        //       to fill in the pipe's websocket url.
+        // if (res.raw_pipe_template) {
+        //      ...
+        // }
         if (res.removedNode) {
           dispatch(receiveControlNodeRemoved(nodeId));
         }
