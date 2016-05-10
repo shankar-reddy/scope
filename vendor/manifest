@@ -798,6 +798,40 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/klauspost/compress/flate",
+			"repository": "https://github.com/klauspost/compress",
+			"vcs": "git",
+			"revision": "14eb9c4951195779ecfbec34431a976de7335b0a",
+			"branch": "master",
+			"path": "/flate",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/klauspost/compress/gzip",
+			"repository": "https://github.com/klauspost/compress",
+			"vcs": "git",
+			"revision": "14eb9c4951195779ecfbec34431a976de7335b0a",
+			"branch": "master",
+			"path": "/gzip",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/klauspost/cpuid",
+			"repository": "https://github.com/klauspost/cpuid",
+			"vcs": "git",
+			"revision": "09cded8978dc9e80714c4d85b0322337b0a1e5e0",
+			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/klauspost/crc32",
+			"repository": "https://github.com/klauspost/crc32",
+			"vcs": "git",
+			"revision": "19b0b332c9e4516a6370a0456e6182c3b5036720",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/kr/pty",
 			"repository": "https://github.com/kr/pty",
 			"vcs": "",

@@ -2,7 +2,8 @@ package appclient
 
 import (
 	"bytes"
-	"compress/gzip"
+
+	"github.com/klauspost/compress/gzip"
 	"github.com/ugorji/go/codec"
 
 	"github.com/weaveworks/scope/report"

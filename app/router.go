@@ -1,7 +1,6 @@
 package app
 
 import (
-	"compress/gzip"
 	"encoding/gob"
 	"io"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	"github.com/PuerkitoBio/ghost/handlers"
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/klauspost/compress/gzip"
 	"github.com/ugorji/go/codec"
 	"golang.org/x/net/context"
 
@@ -80,6 +80,7 @@ func matchURL(r *http.Request, pattern string) (map[string]string, bool) {
 }
 
 func gzipHandler(h http.HandlerFunc) http.HandlerFunc {
+	// TODO: migrate to github.com/klauspost/compress/gzip
 	return handlers.GZIPHandlerFunc(h, nil)
 }
 
