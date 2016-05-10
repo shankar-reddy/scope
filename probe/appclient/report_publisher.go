@@ -2,7 +2,8 @@ package appclient
 
 import (
 	"bytes"
-	"compress/gzip"
+
+	"github.com/golang/snappy"
 	"github.com/ugorji/go/codec"
 
 	"github.com/weaveworks/scope/report"
@@ -24,11 +25,11 @@ func NewReportPublisher(publisher Publisher) *ReportPublisher {
 // Publish serialises and compresses a report, then passes it to a publisher
 func (p *ReportPublisher) Publish(r report.Report) error {
 	buf := &bytes.Buffer{}
-	gzwriter := gzip.NewWriter(buf)
-	if err := codec.NewEncoder(gzwriter, &codec.MsgpackHandle{}).Encode(r); err != nil {
+	compressor := snappy.NewWriter(buf)
+	if err := codec.NewEncoder(compressor, &codec.MsgpackHandle{}).Encode(r); err != nil {
 		return err
 	}
-	gzwriter.Close() // otherwise the content won't get flushed to the output stream
+	compressor.Close() // otherwise the content won't get flushed to the output stream
 
 	return p.publisher.Publish(buf)
 }

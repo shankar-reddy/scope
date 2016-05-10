@@ -3,12 +3,14 @@ package app
 import (
 	"compress/gzip"
 	"encoding/gob"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 
 	"github.com/PuerkitoBio/ghost/handlers"
+	"github.com/golang/snappy"
 	"github.com/gorilla/mux"
 	"github.com/ugorji/go/codec"
 	"golang.org/x/net/context"
@@ -106,18 +108,22 @@ func RegisterReportPostHandler(a Adder, router *mux.Router) {
 	post.HandleFunc("/api/report", requestContextDecorator(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		var (
 			rpt    report.Report
-			reader = r.Body
+			reader io.Reader = r.Body
 			err    error
 		)
+		defer r.Body.Close()
 		if strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
 			reader, err = gzip.NewReader(r.Body)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+		} else if strings.Contains(r.Header.Get("Content-Encoding"), "snappy") {
+			reader = snappy.NewReader(r.Body)
 		}
 
 		decoder := gob.NewDecoder(reader).Decode
+
 		if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
 			decoder = codec.NewDecoder(reader, &codec.JsonHandle{}).Decode
 		} else if strings.HasPrefix(r.Header.Get("Content-Type"), "application/msgpack") {

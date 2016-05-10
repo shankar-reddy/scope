@@ -236,9 +236,8 @@ func (c *appClient) publish(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Encoding", "gzip")
+	req.Header.Set("Content-Encoding", "x-snappy-framed")
 	req.Header.Set("Content-Type", "application/msgpack")
-	// req.Header.Set("Content-Type", "application/binary") // TODO: we should use http.DetectContentType(..) on the gob'ed
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return err

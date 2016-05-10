@@ -690,6 +690,14 @@
 			"path": "/proto"
 		},
 		{
+			"importpath": "github.com/golang/snappy",
+			"repository": "https://github.com/golang/snappy",
+			"vcs": "git",
+			"revision": "d7b1e156f50d3c4664f683603af70e3e47fa0aa2",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/google/cadvisor/info/v1",
 			"repository": "https://github.com/google/cadvisor",
 			"vcs": "",
