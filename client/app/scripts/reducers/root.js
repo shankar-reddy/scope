@@ -58,6 +58,7 @@ export const initialState = makeMap({
   updatePausedAt: null, // Date
   websocketClosed: true,
   showingHelp: false,
+  optionKeyDown: false,
 
   selectedMetric: null,
   pinnedMetric: null,
@@ -157,6 +158,10 @@ export function rootReducer(state = initialState, action) {
         );
       }
       return state;
+    }
+
+    case ActionTypes.SET_OPTION_KEY_DOWN: {
+      return state.set('optionKeyDown', action.down);
     }
 
     case ActionTypes.CLEAR_CONTROL_ERROR: {
@@ -388,7 +393,8 @@ export function rootReducer(state = initialState, action) {
       return state.setIn(['controlPipes', action.pipeId], makeOrderedMap({
         id: action.pipeId,
         nodeId: action.nodeId,
-        raw: action.rawTty
+        raw: action.rawTty,
+        rawPipeTemplate: action.rawPipeTemplate
       }));
     }
 
