@@ -83,6 +83,14 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/bmizerany/pat",
+			"repository": "https://github.com/bmizerany/pat",
+			"vcs": "git",
+			"revision": "c068ca2f0aacee5ac3681d68e4d0a003b7d1fd2c",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/c9s/goprocinfo/linux",
 			"repository": "https://github.com/c9s/goprocinfo",
 			"vcs": "",
@@ -623,6 +631,14 @@
 			"path": "/system"
 		},
 		{
+			"importpath": "github.com/eknkc/amber",
+			"repository": "https://github.com/eknkc/amber",
+			"vcs": "git",
+			"revision": "91774f050c1453128146169b626489e60108ec03",
+			"branch": "master",
+			"notests": true
+		},
+		{
 			"importpath": "github.com/emicklei/go-restful",
 			"repository": "https://github.com/emicklei/go-restful",
 			"vcs": "",
@@ -1040,6 +1056,14 @@
 			"revision": "c062049c1793b01a3cc3fe786108edabbaf7756b",
 			"branch": "master",
 			"path": "/codec"
+		},
+		{
+			"importpath": "github.com/weaveworks/ghost",
+			"repository": "https://github.com/weaveworks/ghost",
+			"vcs": "git",
+			"revision": "7e24f55d14266093c1ee8275c6750caca00a6184",
+			"branch": "master",
+			"notests": true
 		},
 		{
 			"importpath": "github.com/weaveworks/go-checkpoint",

@@ -8,11 +8,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/PuerkitoBio/ghost/handlers"
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/gzip"
 	"github.com/ugorji/go/codec"
+	"github.com/weaveworks/ghost/handlers"
 	"golang.org/x/net/context"
 
 	"github.com/weaveworks/scope/common/hostname"
@@ -80,7 +80,6 @@ func matchURL(r *http.Request, pattern string) (map[string]string, bool) {
 }
 
 func gzipHandler(h http.HandlerFunc) http.HandlerFunc {
-	// TODO: migrate to github.com/klauspost/compress/gzip
 	return handlers.GZIPHandlerFunc(h, nil)
 }
 
