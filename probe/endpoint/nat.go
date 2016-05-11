@@ -50,6 +50,16 @@ func toMapping(f flow) *endpointMapping {
 // the NAT table.
 func (n natMapper) applyNAT(rpt report.Report, scope string) {
 	n.flowWalker.walkFlows(func(f flow) {
+		// Do DNAT
+		// TODO: How does this impact the translation below?
+		//       Optimize lookups.
+		if f.Original.Layer3.DstIP != f.Reply.Layer3.SrcIP {
+			originalEndpointID := report.MakeEndpointNodeID(scope, f.Original.Layer3.SrcIP, strconv.Itoa(f.Original.Layer3.SrcPort))
+			// the connection should be f.Reply.Layer3.DstIP -> f.Reply.Layer3.SrcIP
+			node, ok := rpt.Endpoint.Nodes[originalEndpointID]
+			//...
+		}
+
 		var (
 			mapping          = toMapping(f)
 			realEndpointID   = report.MakeEndpointNodeID(scope, mapping.originalIP, strconv.Itoa(mapping.originalPort))
